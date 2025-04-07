@@ -169,8 +169,14 @@ int main(void)
   // //  结束传输(拉高SYNC)
   // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 
-  DAC8568_WriteAndUpdate(BROADCAST, 0b1111111111111111); // 写入并更新全部通道的值
-  DAC8568_WriteAndUpdate(CHANNEL_A, 0b1101100000000000); // 写入并更新通道A的值
+  DAC8568_WriteAndUpdate(BROADCAST, 0b0101011111111111); // 写入并更新全部通道的值
+  DAC8568_WriteAndUpdate(CHANNEL_A, 0b0101100000000000); // 写入并更新通道A的值
+  // DAC8568_WriteAllChannels(0b1101100000000000); // Need to fix this line
+  // DAC8568_UpdateAllChannels();
+  // DAC8568_Write(CHANNEL_A, 0b11101100000000000); 
+  // DAC8568_Update(CHANNEL_A);
+  
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -179,9 +185,9 @@ int main(void)
   {
     HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);            // 翻转LED引脚的状态
     HAL_Delay(2000);                                       // 延时1000毫秒
-    DAC8568_WriteAndUpdate(BROADCAST, 0b0111111111111111); // 写入并更新全部通道的值
+ //   DAC8568_WriteAndUpdate(BROADCAST, 0b0111111111111111); // 写入并更新全部通道的值
     HAL_Delay(2000);                                       // 延时1000毫秒
-    DAC8568_WriteAndUpdate(BROADCAST, 0b0000000000000000); // 写入并更新全部通道的值
+  //  DAC8568_WriteAndUpdate(BROADCAST, 0b0000000000000000); // 写入并更新全部通道的值
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
