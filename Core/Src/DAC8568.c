@@ -1,3 +1,7 @@
+/*
+ * DAC8568/DAC8168/DAC8568 驱动程序
+ * 作者: 雪豹
+ */
 #include "dac8568.h"
 
 static SPI_HandleTypeDef *hspi_dac;
