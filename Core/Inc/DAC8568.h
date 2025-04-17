@@ -95,6 +95,11 @@
 #ifndef DAC8568_H
 #define DAC8568_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include "main.h"
 
 // DAC8568数据帧结构 (31-0位)
@@ -145,18 +150,21 @@
 #define CLEAR_CODE_FULL_SCALE 0b10   // 清除为全刻度
 #define CLEAR_CODE_NO_OPERATION 0b11 // 无操作
 
-// 函数声明
-void DAC8568_Init(SPI_HandleTypeDef *hspi, GPIO_TypeDef *sync_port, uint16_t sync_pin);
-void DAC8568_Write(uint8_t channel, uint16_t data);
-void DAC8568_Update(uint8_t channel);
-void DAC8568_WriteAndUpdate(uint8_t channel, uint16_t data);
-void DAC8568_WriteAllChannels(uint16_t *data);
-void DAC8568_UpdateAllChannels(void);
-void DAC8568_SetPowerMode(uint8_t channel, uint8_t mode);
-void DAC8568_EnableInternalRef(uint8_t mode);
-void DAC8568_SetClearCode(uint8_t mode);
-void DAC8568_SoftwareReset(void);
-void DAC8568_SendRawCommand(uint8_t cmd_bits, uint8_t addr_bits, uint16_t data_bits, uint8_t feature_bits);
-void DAC8568_SendRawData(uint8_t raw_data[4]);
+    // 函数声明
+    void DAC8568_Init(SPI_HandleTypeDef *hspi, GPIO_TypeDef *sync_port, uint16_t sync_pin);
+    void DAC8568_Write(uint8_t channel, uint16_t data);
+    void DAC8568_Update(uint8_t channel);
+    void DAC8568_WriteAndUpdate(uint8_t channel, uint16_t data);
+    void DAC8568_WriteAllChannels(uint16_t *data);
+    void DAC8568_UpdateAllChannels(void);
+    void DAC8568_SetPowerMode(uint8_t channel, uint8_t mode);
+    void DAC8568_EnableInternalRef(uint8_t mode);
+    void DAC8568_SetClearCode(uint8_t mode);
+    void DAC8568_SoftwareReset(void);
+    void DAC8568_SendRawCommand(uint8_t cmd_bits, uint8_t addr_bits, uint16_t data_bits, uint8_t feature_bits);
+    void DAC8568_SendRawData(uint8_t raw_data[4]);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* DAC8568_H */
