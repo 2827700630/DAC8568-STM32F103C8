@@ -74,7 +74,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+// y = kx + b
+#define K 0.95374655417
+#define B -0.11566185 // 目前不用这个校准
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -172,9 +174,9 @@ int main(void)
   // // HAL_Delay(1); // 等待传输完成
   // //  结束传输(拉高SYNC)
   // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-
-  DAC8568_WriteAndUpdate(BROADCAST, 0b0101011111111111); // 写入并更新全部通道的值
-  DAC8568_WriteAndUpdate(CHANNEL_A, 0b0101100000000000); // 写入并更新通道A的值
+  // HAL_Delay(10); // 等待传输完成
+  // DAC8568_WriteAndUpdate(BROADCAST, 0b1111111111111111); // 写入并更新全部通道的值
+  // DAC8568_WriteAndUpdate(CHANNEL_A, 0b1000000000000000); // 写入并更新通道A的值
   // DAC8568_WriteAllChannels(0b1101100000000000); // Need to fix this line
   // DAC8568_UpdateAllChannels();
   // DAC8568_Write(CHANNEL_A, 0b11101100000000000);
@@ -186,11 +188,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin); // 翻转LED引脚的状态
-    HAL_Delay(2000);                            // 延时1000毫秒
-                                                //   DAC8568_WriteAndUpdate(BROADCAST, 0b0111111111111111); // 写入并更新全部通道的值
-    HAL_Delay(2000);                            // 延时1000毫秒
-    //  DAC8568_WriteAndUpdate(BROADCAST, 0b0000000000000000); // 写入并更新全部通道的值
+
+    for (int i = 65535; i >= 0; i = i - 4096) // 从65535到0，步长4096
+    {
+      HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);     // 翻转LED引脚的状态
+      DAC8568_WriteAndUpdate(CHANNEL_A, (uint16_t)i); // 写入并更新通道A的值 (强制类型转换为uint16_t)
+      float voltage = 2.5 * i / 65536;                // 计算电压值 (假设Vref=2.5V，16位分辨率)
+      float realvoltage = K * 2.5 * i / 65536;        // 计算电压值 (假设Vref=2.5V，16位分辨率)
+      HAL_Delay(2000);                                // 稍微缩短延时以便观察变化，可根据需要调整
+    }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

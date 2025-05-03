@@ -19,7 +19,7 @@ void DAC8568_Init(SPI_HandleTypeDef *hspi, GPIO_TypeDef *sync_port, uint16_t syn
     HAL_GPIO_WritePin(SYNC_PORT, SYNC_PIN, GPIO_PIN_SET);
 
     // 可选: 执行软件复位(参考数据手册第39页表6)
-     DAC8568_SoftwareReset();
+    DAC8568_SoftwareReset();
 
     // 可选: 启用内部参考(参考数据手册第44页表7)
     // DAC8568_EnableInternalRef(REF_ENABLE);
@@ -235,7 +235,7 @@ void DAC8568_EnableInternalRef(uint8_t mode)
     // 第三个字节: 均为0
     txData[2] = 0b00000000;
 
-    // 第四个字节: 
+    // 第四个字节:
     // 7-1位: 均为0
     // 0位: F0=禁用/启用内部参考位
     txData[3] = (mode & 0b00000001);
@@ -347,7 +347,7 @@ void DAC8568_SoftwareReset(void)
 void DAC8568_SendRawCommand(uint8_t cmd_bits, uint8_t addr_bits, uint16_t data_bits, uint8_t feature_bits)
 {
     uint8_t txData[4]; // 使用4字节(32位)传输
-    
+
     // 32位帧格式:
     // [31:28] 前缀位(0000)
     // [27:24] 命令位(cmd_bits)
@@ -359,27 +359,27 @@ void DAC8568_SendRawCommand(uint8_t cmd_bits, uint8_t addr_bits, uint16_t data_b
     // 7-4位: 前缀位(0000)
     // 3-0位: 命令位
     txData[0] = 0b00000000 | (cmd_bits & 0b00001111);
-    
+
     // 第二个字节:
     // 7-4位: 地址位
     // 3-0位: 数据高4位(19-16位)
     txData[1] = ((addr_bits & 0b00001111) << 4) | ((data_bits >> 12) & 0b00001111);
-    
+
     // 第三个字节:
     // 7-0位: 数据中间8位(15-8位)
     txData[2] = (data_bits >> 4) & 0xFF;
-    
+
     // 第四个字节:
     // 7-4位: 数据低4位(7-4位)
     // 3-0位: 特征位
     txData[3] = ((data_bits & 0b00001111) << 4) | (feature_bits & 0b00001111);
-    
+
     // 开始传输(拉低SYNC)
     HAL_GPIO_WritePin(SYNC_PORT, SYNC_PIN, GPIO_PIN_RESET);
-    
+
     // SPI传输
     HAL_SPI_Transmit(hspi_dac, txData, 4, HAL_MAX_DELAY); // 传输4字节
-    
+
     // 结束传输(拉高SYNC)
     HAL_GPIO_WritePin(SYNC_PORT, SYNC_PIN, GPIO_PIN_SET);
 }
@@ -392,10 +392,10 @@ void DAC8568_SendRawData(uint8_t raw_data[4])
 {
     // 开始传输(拉低SYNC)
     HAL_GPIO_WritePin(SYNC_PORT, SYNC_PIN, GPIO_PIN_RESET);
-    
+
     // SPI传输
     HAL_SPI_Transmit(hspi_dac, raw_data, 4, HAL_MAX_DELAY); // 传输4字节
-    
+
     // 结束传输(拉高SYNC)
     HAL_GPIO_WritePin(SYNC_PORT, SYNC_PIN, GPIO_PIN_SET);
 }
