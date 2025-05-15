@@ -74,8 +74,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-// 使用y = kx校准
-#define K 0.95374655417
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -147,12 +146,11 @@ int main(void)
     for (int i = 65535; i >= 0; i = i - 4096) // 从65535到0，步长4096
     {
       HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);     // 翻转LED引脚的状态
-      DAC8568_WriteAndUpdate(CHANNEL_A, (uint16_t)i); // 写入并更新通道A的值 (强制类型转换为uint16_t)
+      DAC8568_WriteAndUpdate(BROADCAST, (uint16_t)i); // 写入并更新所有通道的值 (强制类型转换为uint16_t)
+      // DAC8568_WriteAndUpdate(CHANNEL_A, (uint16_t)i); // 写入并更新通道A的值 (强制类型转换为uint16_t)
       // DAC8568_WriteAndUpdate(CHANNEL_B, (uint16_t)i); // 写入并更新通道B的值 (强制类型转换为uint16_t)
-      // DAC8568_WriteAndUpdate(BROADCAST, (uint16_t)i); // 写入并更新所有通道的值 (强制类型转换为uint16_t)
-      float voltage = 2.5 * i / 65536;         // 计算电压值 (假设Vref=2.5V，16位分辨率)
-      float realvoltage = K * 2.5 * i / 65536; // 计算电压值 (假设Vref=2.5V，16位分辨率)
-      HAL_Delay(2000);                         // 稍微缩短延时以便观察变化，可根据需要调整
+      float voltage = 2.5 * 2 * i / 65536;         // 计算电压值 (假设Vref=2.5V，16位分辨率)
+      HAL_Delay(2000);                             // 稍微缩短延时以便观察变化，可根据需要调整
     }
 
     /* USER CODE END WHILE */
