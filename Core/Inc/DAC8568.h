@@ -158,7 +158,12 @@ extern "C"
     void DAC8568_WriteAllChannels(uint16_t *data);
     void DAC8568_UpdateAllChannels(void);
     void DAC8568_SetPowerMode(uint8_t channel, uint8_t mode);
-    void DAC8568_EnableInternalRef(uint8_t mode);
+    void DAC8568_EnableStaticInternalRef(void);
+    void DAC8568_DisableStaticInternalRef(void);
+    void DAC8568_EnableFlexMode(void);
+    void DAC8568_DisableFlexMode(void);
+    void DAC8568_SetFlexModeRefAlwaysOn(uint8_t enable);
+    void DAC8568_SetFlexModeRefAlwaysOff(uint8_t enable);
     void DAC8568_SetClearCode(uint8_t mode);
     void DAC8568_SoftwareReset(void);
     void DAC8568_SendRawCommand(uint8_t cmd_bits, uint8_t addr_bits, uint16_t data_bits, uint8_t feature_bits);

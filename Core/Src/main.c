@@ -74,9 +74,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-// y = kx + b
+// 使用y = kx校准
 #define K 0.95374655417
-#define B -0.11566185 // 目前不用这个校准
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -135,52 +134,8 @@ int main(void)
   // 初始化DAC8568 (SYNC连接到PA4)
   DAC8568_Init(&hspi1, SYNC_GPIO_Port, SYNC_Pin);
   HAL_Delay(10);
-  // 启用内部参考(可选)
-  DAC8568_EnableInternalRef(REF_ENABLE);
-
-  // // 手动使用SPI发送数据
-  // // 准备SPI发送数据 (32位帧，参考数据手册第35页表1)
-  // uint8_t txData[4];
-
-  // /* 字节1: 命令+通道选择 (DB31-DB24)
-  //  * - 高4位: 0011 (0x3) = CMD_WRITE_INPUT_UPDATE_ONE (写入并更新单个通道)
-  //  * - 低4位: 0000 (0x0) = CHANNEL_A
-  //  */
-  // txData[0] = 0b00000011; // 0x33，31-28位全0（Prefix Bits），27-24位为命令（Control Bits）
-
-  // /* 字节2: 数据高字节 (DB23-DB16)
-  //  * - 10000000 (0x80) = 数据位D15-D8
-  //  * 对应16位数据0x8000的高字节
-  //  */
-  // txData[1] = 0b11111110; // 0x4E，23-20位为通道选择（Address Bits），19-16位为数据高字节（Data Bits）
-
-  // /* 字节3: 数据低字节 (DB15-DB8)
-  //  * - 00000000 (0x00) = 数据位D7-D0
-  //  * 对应16位数据0x8000的低字节
-  //  */
-  // txData[2] = 0b00000000; // 0x00，15-12位为数据中字节（Data Bits）
-
-  // /* 字节4: 填充位+特征位 (DB7-DB0)
-  //  * - 高4位: 0000 (填充，DAC8568实际只用D15-D4)
-  //  * - 低4位: 0000 (特征位F3-F0未使用)
-  //  */
-  // txData[3] = 0b00000000; // 0x00，7-4位为数据低字节（Data Bits），3-0位为特征位（Feature Bits）
-
-  // // 开始传输(拉低SYNC)
-  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  // // HAL_Delay(1); // 等待传输完成
-  // //  SPI传输 (参考数据手册第7-8页时序)
-  // HAL_SPI_Transmit(&hspi1, txData, 4, HAL_MAX_DELAY);
-  // // HAL_Delay(1); // 等待传输完成
-  // //  结束传输(拉高SYNC)
-  // HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-  // HAL_Delay(10); // 等待传输完成
-  // DAC8568_WriteAndUpdate(BROADCAST, 0b1111111111111111); // 写入并更新全部通道的值
-  // DAC8568_WriteAndUpdate(CHANNEL_A, 0b1000000000000000); // 写入并更新通道A的值
-  // DAC8568_WriteAllChannels(0b1101100000000000); // Need to fix this line
-  // DAC8568_UpdateAllChannels();
-  // DAC8568_Write(CHANNEL_A, 0b11101100000000000);
-  // DAC8568_Update(CHANNEL_A);
+  DAC8568_EnableStaticInternalRef(); // 启用静态内部参考(2.5V)
+  // DAC8568_DisableStaticInternalRef(); // 禁用静态内部参考(2.5V)
 
   /* USER CODE END 2 */
 
@@ -193,9 +148,11 @@ int main(void)
     {
       HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);     // 翻转LED引脚的状态
       DAC8568_WriteAndUpdate(CHANNEL_A, (uint16_t)i); // 写入并更新通道A的值 (强制类型转换为uint16_t)
-      float voltage = 2.5 * i / 65536;                // 计算电压值 (假设Vref=2.5V，16位分辨率)
-      float realvoltage = K * 2.5 * i / 65536;        // 计算电压值 (假设Vref=2.5V，16位分辨率)
-      HAL_Delay(2000);                                // 稍微缩短延时以便观察变化，可根据需要调整
+      // DAC8568_WriteAndUpdate(CHANNEL_B, (uint16_t)i); // 写入并更新通道B的值 (强制类型转换为uint16_t)
+      // DAC8568_WriteAndUpdate(BROADCAST, (uint16_t)i); // 写入并更新所有通道的值 (强制类型转换为uint16_t)
+      float voltage = 2.5 * i / 65536;         // 计算电压值 (假设Vref=2.5V，16位分辨率)
+      float realvoltage = K * 2.5 * i / 65536; // 计算电压值 (假设Vref=2.5V，16位分辨率)
+      HAL_Delay(2000);                         // 稍微缩短延时以便观察变化，可根据需要调整
     }
 
     /* USER CODE END WHILE */
